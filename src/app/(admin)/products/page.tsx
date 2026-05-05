@@ -1,17 +1,12 @@
 import Link from "next/link";
-import { desc, eq, not } from "drizzle-orm";
 
 import { Button } from "@/components/ui/button";
-import { db } from "@/db/client";
-import { products } from "@/db/schema";
+import { listAdminProducts } from "@/lib/api/products";
 
 import { ProductTable } from "./_components/ProductTable";
 
 export default async function ProductsPage() {
-  const allProducts = await db.query.products.findMany({
-    where: not(eq(products.status, "archived")),
-    orderBy: [desc(products.updatedAt)],
-  });
+  const allProducts = await listAdminProducts();
 
   return (
     <section className="space-y-6">
@@ -30,7 +25,11 @@ export default async function ProductsPage() {
         </Button>
       </div>
 
-      <ProductTable products={allProducts} />
+      <ProductTable
+        products={allProducts.filter(
+          (product) => product.status !== "archived",
+        )}
+      />
     </section>
   );
 }

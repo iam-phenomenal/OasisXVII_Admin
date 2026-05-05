@@ -26,14 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Product } from "@/db/schema";
+import type { AdminProduct } from "@/lib/api/products";
 import { formatPrice } from "@/lib/formatPrice";
 
 type ProductTableProps = {
-  products: Product[];
+  products: AdminProduct[];
 };
 
-function getStatusClassName(status: Product["status"]) {
+function getStatusClassName(status: AdminProduct["status"]) {
   if (status === "active") {
     return "border-emerald-500/25 bg-emerald-500/10 text-emerald-300";
   }
@@ -115,7 +115,7 @@ export function ProductTable({ products }: ProductTableProps) {
                   {product.category}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatPrice(Number(product.price), product.currency)}
+                  {formatPrice(product.price, product.currency)}
                 </TableCell>
                 <TableCell>
                   {product.badge ? (

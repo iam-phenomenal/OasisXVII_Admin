@@ -1,7 +1,4 @@
-import { eq } from "drizzle-orm";
-
-import { db } from "@/db/client";
-import { settings } from "@/db/schema";
+import { getAdminSettings } from "@/lib/api/settings";
 
 import { CheckoutSettingsForm } from "./_components/CheckoutSettingsForm";
 import {
@@ -11,17 +8,15 @@ import {
 } from "./_lib/defaults";
 
 export default async function CheckoutSettingsPage() {
-  const row = await db.query.settings.findFirst({
-    where: eq(settings.id, "global"),
-  });
+  const settings = await getAdminSettings();
 
   const initialValues = {
     paymentMethods:
-      row?.paymentMethods?.length === 3
-        ? row.paymentMethods
+      settings.paymentMethods?.length === 1
+        ? settings.paymentMethods
         : DEFAULT_PAYMENT_METHODS,
-    logisticsFeeNgn: row ? Number(row.logisticsFeeNgn) : DEFAULT_LOGISTICS_FEE,
-    dutyTaxNgn: row ? Number(row.dutyTaxNgn) : DEFAULT_DUTY_TAX,
+    logisticsFeeNgn: settings.logisticsFeeNgn ?? DEFAULT_LOGISTICS_FEE,
+    dutyTaxNgn: settings.dutyTaxNgn ?? DEFAULT_DUTY_TAX,
   };
 
   return (

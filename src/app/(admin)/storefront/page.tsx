@@ -1,19 +1,14 @@
-import { eq } from "drizzle-orm";
-
-import { db } from "@/db/client";
-import { settings } from "@/db/schema";
+import { getAdminSettings } from "@/lib/api/settings";
 
 import { StorefrontForm } from "./_components/StorefrontForm";
 
 export default async function StorefrontPage() {
-  const row = await db.query.settings.findFirst({
-    where: eq(settings.id, "global"),
-  });
+  const settings = await getAdminSettings();
 
   const initialValues = {
-    heroImages: row?.heroImages ?? [],
-    heroHeadline: row?.heroHeadline ?? null,
-    heroSubheading: row?.heroSubheading ?? null,
+    heroImages: settings.heroImages ?? [],
+    heroHeadline: settings.heroHeadline ?? null,
+    heroSubheading: settings.heroSubheading ?? null,
   };
 
   return (

@@ -7,7 +7,11 @@ export const productCategoryOptions = [
   "accessories",
   "footwear",
 ] as const;
-export const productBadgeOptions = ["New Drop", "Limited", "Sold Out"] as const;
+export const productBadgeOptions = [
+  "New Drop",
+  "Best Seller",
+  "Sold Out",
+] as const;
 export const productStatusOptions = ["active", "draft", "archived"] as const;
 
 export const productSchema = z.object({

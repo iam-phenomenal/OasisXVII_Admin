@@ -1,33 +1,49 @@
-import NextAuth from "next-auth";
-import { NextResponse } from "next/server";
+import { jwtVerify } from "jose";
+import { type NextRequest, NextResponse } from "next/server";
 
-import authConfig from "@/auth.config";
+const COOKIE_NAME = "admin_token";
+const LOGIN_PATH = "/login";
+const DASHBOARD_PATH = "/";
 
-const { auth } = NextAuth(authConfig);
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not configured.");
+  return new TextEncoder().encode(secret);
+}
 
-export default auth((req) => {
-  const isLoggedIn = Boolean(req.auth);
-  const { pathname } = req.nextUrl;
+async function isAuthenticated(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  if (!token) return false;
+  try {
+    await jwtVerify(token, getJwtSecret());
+    return true;
+  } catch (err) {
+    console.error("[middleware] JWT verification failed:", err);
+    return false;
+  }
+}
 
-  const isLoginPage = pathname === "/login";
-  const isAuthApi = pathname.startsWith("/api/auth");
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const authenticated = await isAuthenticated(request);
 
-  if (isAuthApi) {
+  if (pathname === LOGIN_PATH) {
+    if (authenticated) {
+      return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url));
+    }
     return NextResponse.next();
   }
 
-  if (!isLoggedIn && !isLoginPage) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", req.url);
-    return NextResponse.redirect(loginUrl);
+  if (authenticated) {
+    return NextResponse.next();
   }
 
-  if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(new URL("/", req.url));
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.next();
-});
+  return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],

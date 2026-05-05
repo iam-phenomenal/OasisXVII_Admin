@@ -1,48 +1,57 @@
 "use server";
 
-import { headers } from "next/headers";
-import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
-import { signIn } from "@/auth";
-import { loginRateLimit } from "@/lib/rateLimit";
+import { setAdminToken } from "@/lib/auth";
+
+const DASHBOARD = "/";
 
 export type LoginActionState = {
   error?: string;
 };
 
-function getClientIp(headerValue: string | null): string {
-  return headerValue?.split(",")[0]?.trim() || "unknown";
-}
-
 export async function loginAction(
   _previousState: LoginActionState,
   formData: FormData,
 ): Promise<LoginActionState> {
-  const requestHeaders = await headers();
-  const ip = getClientIp(
-    requestHeaders.get("x-forwarded-for") ?? requestHeaders.get("x-real-ip"),
-  );
+  const apiUrl = process.env.API_URL;
 
-  const { success } = await loginRateLimit.limit(ip);
-
-  if (!success) {
-    return { error: "Too many login attempts. Please wait 10 minutes." };
+  if (!apiUrl) {
+    return { error: "API_URL is not configured." };
   }
 
-  try {
-    await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirect: false,
-    });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { error: "Invalid email or password." };
+  const email = (formData.get("email") as string | null)?.trim();
+  const password = (formData.get("password") as string | null) ?? "";
+
+  const response = await fetch(`${apiUrl}/admin/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+
+    if (response.status === 429) {
+      return { error: "Too many attempts. Please wait." };
     }
 
-    throw error;
+    return {
+      error:
+        typeof body.error === "string" ? body.error : "Invalid credentials",
+    };
   }
 
-  redirect("/");
+  const { token, expiresAt } = (await response.json()) as {
+    token: string;
+    expiresAt: string;
+  };
+
+
+  await setAdminToken(token, expiresAt);
+
+  redirect(DASHBOARD);
 }

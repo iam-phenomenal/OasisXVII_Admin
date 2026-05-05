@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
   { label: "Products", href: "/products", icon: "category" },
   { label: "Storefront", href: "/storefront", icon: "web" },
   { label: "Checkout Settings", href: "/checkout-settings", icon: "point_of_sale" },
-  { label: "Orders", icon: "package_2" },
+  { label: "Orders", href: "/orders", icon: "package_2" },
 ];
 
 function isActiveRoute(pathname: string, href?: string) {

@@ -1,8 +1,6 @@
-import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-import { db } from "@/db/client";
-import { products } from "@/db/schema";
+import { getAdminProduct, listAdminProducts } from "@/lib/api/products";
 
 import { updateProduct } from "../../actions";
 import { ProductForm } from "../../_components/ProductForm";
@@ -17,11 +15,8 @@ export default async function EditProductPage({
   const { id } = await params;
 
   const [product, allProducts] = await Promise.all([
-    db.query.products.findFirst({ where: eq(products.id, id) }),
-    db
-      .select({ id: products.id, name: products.name })
-      .from(products)
-      .where(eq(products.status, "active")),
+    getAdminProduct(id).catch(() => null),
+    listAdminProducts("active"),
   ]);
 
   if (!product || product.status === "archived") {
@@ -58,7 +53,9 @@ export default async function EditProductPage({
           images: product.images,
         }}
         productId={product.id}
-        allProducts={allProducts.filter((entry) => entry.id !== product.id)}
+        allProducts={allProducts
+          .filter((entry) => entry.id !== product.id)
+          .map((entry) => ({ id: entry.id, name: entry.name }))}
         onSubmit={(data) => updateProduct(product.id, data)}
       />
     </section>

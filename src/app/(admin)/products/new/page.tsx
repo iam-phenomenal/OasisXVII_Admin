@@ -1,16 +1,10 @@
-import { eq } from "drizzle-orm";
-
-import { db } from "@/db/client";
-import { products } from "@/db/schema";
+import { listAdminProducts } from "@/lib/api/products";
 
 import { createProduct } from "../actions";
 import { ProductForm } from "../_components/ProductForm";
 
 export default async function NewProductPage() {
-  const allProducts = await db
-    .select({ id: products.id, name: products.name })
-    .from(products)
-    .where(eq(products.status, "active"));
+  const allProducts = await listAdminProducts("active");
 
   return (
     <section className="max-w-4xl space-y-6">
@@ -23,7 +17,13 @@ export default async function NewProductPage() {
         </h1>
       </div>
 
-      <ProductForm allProducts={allProducts} onSubmit={createProduct} />
+      <ProductForm
+        allProducts={allProducts.map((product) => ({
+          id: product.id,
+          name: product.name,
+        }))}
+        onSubmit={createProduct}
+      />
     </section>
   );
 }

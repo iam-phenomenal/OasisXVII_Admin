@@ -1,41 +1,31 @@
-import { auth } from "@/auth";
-import { db } from "@/db/client";
-import { products, settings } from "@/db/schema";
-import { count, eq, sql } from "drizzle-orm";
+import { getDashboardStats } from "@/lib/api/dashboard";
+import { getCurrentAdmin } from "@/lib/auth";
+import { formatPrice } from "@/lib/formatPrice";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  const [activeCount, soldOutCount, imageCountRow, settingsRow] =
-    await Promise.all([
-      db
-        .select({ count: count() })
-        .from(products)
-        .where(eq(products.status, "active")),
-      db
-        .select({ count: count() })
-        .from(products)
-        .where(eq(products.badge, "Sold Out")),
-      db
-        .select({
-          total: sql<number>`coalesce(sum(jsonb_array_length(${products.images})), 0)`,
-        })
-        .from(products),
-      db.query.settings.findFirst({
-        where: eq(settings.id, "global"),
-      }),
-    ]);
-
-  const activeProducts = activeCount[0]?.count ?? 0;
-  const soldOut = soldOutCount[0]?.count ?? 0;
-  const totalImages = imageCountRow[0]?.total ?? 0;
-  const enabledPayments = (settingsRow?.paymentMethods ?? []).filter(
-    (method) => method.enabled,
-  ).length;
+  const admin = await getCurrentAdmin();
+  const s = await getDashboardStats();
   const stats = [
-    { label: "Active products", icon: "category", value: activeProducts },
-    { label: "Sold out", icon: "sell", value: soldOut },
-    { label: "Images uploaded", icon: "photo_library", value: totalImages },
-    { label: "Payment methods", icon: "point_of_sale", value: enabledPayments },
+    {
+      label: "Total orders",
+      icon: "receipt_long",
+      value: s.totalOrders,
+    },
+    {
+      label: "Total revenue",
+      icon: "payments",
+      value: formatPrice(s.totalRevenue, "NGN"),
+    },
+    {
+      label: "Active products",
+      icon: "category",
+      value: s.productsByStatus.active,
+    },
+    {
+      label: "Pending orders",
+      icon: "pending_actions",
+      value: s.ordersByStatus.pending,
+    },
   ];
 
   return (
@@ -77,7 +67,7 @@ export default async function DashboardPage() {
         <p className="text-xs text-muted-foreground">
           Signed in as{" "}
           <span className="font-medium text-foreground">
-            {session?.user?.email ?? "unknown"}
+            {admin?.email ?? "unknown"}
           </span>
         </p>
       </div>

@@ -1,22 +1,10 @@
-import type { PaymentMethodConfig } from "@/db/schema";
+import type { PaymentMethodConfig } from "@/types/settings";
 
 export const DEFAULT_PAYMENT_METHODS: PaymentMethodConfig[] = [
   {
     id: "paystack",
     enabled: true,
     label: "Paystack",
-    description: "",
-  },
-  {
-    id: "moniepoint",
-    enabled: true,
-    label: "Moniepoint – Bank Transfer",
-    description: "",
-  },
-  {
-    id: "zenith",
-    enabled: true,
-    label: "Zenith Bank – Bank Transfer",
     description: "",
   },
 ];

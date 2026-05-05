@@ -1,22 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 import { updateCheckoutSettings, type CheckoutActionResult } from "../actions";
 import {
@@ -42,14 +34,6 @@ export function CheckoutSettingsForm({
     resolver: zodResolver(checkoutSettingsSchema),
     defaultValues: initialValues,
   });
-
-  const { fields } = useFieldArray({
-    control: form.control,
-    name: "paymentMethods",
-  });
-
-  const watchedMethods = form.watch("paymentMethods");
-  const enabledCount = watchedMethods.filter((method) => method.enabled).length;
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -77,118 +61,65 @@ export function CheckoutSettingsForm({
     form.reset(data);
   });
 
+  const labelError = form.formState.errors.paymentMethods?.[0]?.label?.message;
+  const descriptionError =
+    form.formState.errors.paymentMethods?.[0]?.description?.message;
+
   return (
-    <TooltipProvider>
-      <form onSubmit={onSubmit} className="space-y-6">
-        <section className="rounded-lg border border-border bg-card p-5">
-          <div className="space-y-1">
-            <h2 className="text-base font-semibold text-foreground">
-              Payment Methods
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Control which payment methods appear at checkout and how each one
-              is described.
-            </p>
+    <form onSubmit={onSubmit} className="space-y-6">
+      <section className="rounded-lg border border-border bg-card p-5">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold text-foreground">
+            Payment Method
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Paystack is the fixed payment processor. Customise how it appears at
+            checkout.
+          </p>
+        </div>
+
+        <div className="mt-5">
+          <div className="rounded-lg border border-border bg-card p-5">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Paystack</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                paystack
+              </p>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="paymentMethods.0.label">Label</Label>
+                <Input
+                  id="paymentMethods.0.label"
+                  placeholder="Display label on storefront"
+                  aria-invalid={Boolean(labelError)}
+                  {...form.register("paymentMethods.0.label")}
+                />
+                {labelError ? (
+                  <p className="text-xs text-destructive">{labelError}</p>
+                ) : null}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="paymentMethods.0.description">
+                  Description
+                </Label>
+                <Textarea
+                  id="paymentMethods.0.description"
+                  rows={3}
+                  placeholder="Payment instructions shown after selection (optional)"
+                  aria-invalid={Boolean(descriptionError)}
+                  {...form.register("paymentMethods.0.description")}
+                />
+                {descriptionError ? (
+                  <p className="text-xs text-destructive">{descriptionError}</p>
+                ) : null}
+              </div>
+            </div>
           </div>
-
-          <div className="mt-5 space-y-4">
-            {fields.map((item, index) => {
-              const method = watchedMethods[index];
-              const isLastActive =
-                Boolean(method?.enabled) && enabledCount === 1;
-              const labelError =
-                form.formState.errors.paymentMethods?.[index]?.label?.message;
-              const descriptionError =
-                form.formState.errors.paymentMethods?.[index]?.description
-                  ?.message;
-
-              return (
-                <div
-                  key={item.id}
-                  className="rounded-lg border border-border bg-card p-5"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-foreground">
-                        {method?.label || item.label}
-                      </p>
-                      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                        {item.id}
-                      </p>
-                    </div>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span
-                          className={cn(
-                            "inline-flex",
-                            isLastActive ? "cursor-not-allowed" : undefined,
-                          )}
-                        >
-                          <Switch
-                            checked={Boolean(method?.enabled)}
-                            onCheckedChange={(checked) => {
-                              setServerError(null);
-                              form.setValue(
-                                `paymentMethods.${index}.enabled`,
-                                checked,
-                                { shouldDirty: true },
-                              );
-                            }}
-                            disabled={isLastActive}
-                            aria-label={`Toggle ${method?.label || item.label}`}
-                          />
-                        </span>
-                      </TooltipTrigger>
-                      {isLastActive ? (
-                        <TooltipContent>
-                          <p>At least one payment method must be enabled.</p>
-                        </TooltipContent>
-                      ) : null}
-                    </Tooltip>
-                  </div>
-
-                  <div className="mt-4 space-y-4">
-                    <div className="space-y-1.5">
-                      <Label htmlFor={`paymentMethods.${index}.label`}>
-                        Label
-                      </Label>
-                      <Input
-                        id={`paymentMethods.${index}.label`}
-                        placeholder="Display label on storefront"
-                        aria-invalid={Boolean(labelError)}
-                        {...form.register(`paymentMethods.${index}.label`)}
-                      />
-                      {labelError ? (
-                        <p className="text-xs text-destructive">{labelError}</p>
-                      ) : null}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor={`paymentMethods.${index}.description`}>
-                        Description
-                      </Label>
-                      <Textarea
-                        id={`paymentMethods.${index}.description`}
-                        rows={3}
-                        placeholder="Payment instructions shown after selection (optional)"
-                        aria-invalid={Boolean(descriptionError)}
-                        {...form.register(
-                          `paymentMethods.${index}.description`,
-                        )}
-                      />
-                      {descriptionError ? (
-                        <p className="text-xs text-destructive">
-                          {descriptionError}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        </div>
+      </section>
 
         <section className="rounded-lg border border-border bg-card p-5">
           <div className="space-y-1">
@@ -246,7 +177,6 @@ export function CheckoutSettingsForm({
             {form.formState.isSubmitting ? "Saving..." : "Save changes"}
           </Button>
         </div>
-      </form>
-    </TooltipProvider>
+    </form>
   );
 }

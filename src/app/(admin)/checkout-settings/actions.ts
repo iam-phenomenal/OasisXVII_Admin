@@ -1,10 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
-
-import { db } from "@/db/client";
-import { settings } from "@/db/schema";
+import { adminFetch, ApiError } from "@/lib/api/client";
 
 import {
   checkoutSettingsSchema,
@@ -22,31 +18,23 @@ export async function updateCheckoutSettings(
     return { error: parsed.error.issues[0]?.message ?? "Invalid data." };
   }
 
-  const { paymentMethods, logisticsFeeNgn, dutyTaxNgn } = parsed.data;
-
-  const existing = await db.query.settings.findFirst({
-    where: eq(settings.id, "global"),
-  });
-
-  if (!existing) {
-    await db.insert(settings).values({
-      id: "global",
-      paymentMethods,
-      logisticsFeeNgn: String(logisticsFeeNgn),
-      dutyTaxNgn: String(dutyTaxNgn),
-      updatedAt: new Date(),
+  try {
+    await adminFetch("/admin/settings", {
+      method: "PATCH",
+      body: JSON.stringify({
+        paymentMethods: parsed.data.paymentMethods.map((m) => ({
+          ...m,
+          enabled: true,
+        })),
+        logisticsFeeNgn: parsed.data.logisticsFeeNgn,
+        dutyTaxNgn: parsed.data.dutyTaxNgn,
+      }),
     });
-  } else {
-    await db
-      .update(settings)
-      .set({
-        paymentMethods,
-        logisticsFeeNgn: String(logisticsFeeNgn),
-        dutyTaxNgn: String(dutyTaxNgn),
-        updatedAt: new Date(),
-      })
-      .where(eq(settings.id, "global"));
-  }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return { error: error.message };
+    }
 
-  revalidatePath("/checkout-settings");
+    return { error: "Failed to save checkout settings." };
+  }
 }

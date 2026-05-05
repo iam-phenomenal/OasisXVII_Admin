@@ -1,40 +1,25 @@
-import ImageKit from "imagekit";
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
-
-const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY ?? "",
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY ?? "",
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT ?? "",
-});
-
-function hasImageKitConfig() {
-  return Boolean(
-    process.env.IMAGEKIT_PUBLIC_KEY &&
-    process.env.IMAGEKIT_PRIVATE_KEY &&
-    process.env.IMAGEKIT_URL_ENDPOINT,
-  );
-}
+import { getAdminToken } from "@/lib/auth";
 
 export async function GET() {
-  const session = await auth();
+  const token = await getAdminToken();
 
-  if (!session) {
+  if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!hasImageKitConfig()) {
+  const response = await fetch(`${process.env.API_URL}/admin/imagekit/auth`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
     return NextResponse.json(
-      { error: "Image uploads are not configured." },
-      { status: 500 },
+      { error: "Failed to generate upload token" },
+      { status: response.status },
     );
   }
 
-  const authParams = imagekit.getAuthenticationParameters();
-
-  return NextResponse.json({
-    ...authParams,
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  });
+  const data = await response.json();
+  return NextResponse.json(data);
 }

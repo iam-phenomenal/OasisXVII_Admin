@@ -1,12 +1,9 @@
 "use server";
 
-import { and, eq, ne } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
-import { db } from "@/db/client";
-import { products } from "@/db/schema";
+import { ApiError, adminFetch } from "@/lib/api/client";
+import { getCurrentAdmin } from "@/lib/auth";
 
 import { productSchema, type ProductFormValues } from "./_lib/productSchema";
 
@@ -34,9 +31,9 @@ function buildFieldErrors(data: ProductFormValues): FieldErrors {
 }
 
 async function ensureAuthorized() {
-  const session = await auth();
+  const admin = await getCurrentAdmin();
 
-  if (!session) {
+  if (!admin) {
     return { error: "Unauthorized." } satisfies Exclude<
       ProductActionResult,
       void
@@ -48,11 +45,12 @@ async function ensureAuthorized() {
 
 function normalizePayload(data: ProductFormValues, id?: string) {
   return {
+    id: data.id,
     slug: data.slug,
     name: data.name,
     tagline: data.tagline,
     description: data.description,
-    price: String(data.price),
+    price: data.price,
     currency: data.currency,
     category: data.category,
     badge: data.badge,
@@ -64,7 +62,6 @@ function normalizePayload(data: ProductFormValues, id?: string) {
       (relatedId) => relatedId !== id,
     ),
     images: data.images,
-    updatedAt: new Date(),
   };
 }
 
@@ -83,20 +80,19 @@ export async function createProduct(
     return { fieldErrors: buildFieldErrors(data) };
   }
 
-  const existingProduct = await db.query.products.findFirst({
-    where: eq(products.slug, parsed.data.slug),
-  });
+  try {
+    await adminFetch("/admin/products", {
+      method: "POST",
+      body: JSON.stringify(normalizePayload(parsed.data)),
+    });
+  } catch (error: any) {
+    if (error instanceof ApiError && error.status === 409) {
+      return { fieldErrors: { slug: "Slug already in use." } };
+    }
 
-  if (existingProduct) {
-    return { fieldErrors: { slug: "Slug already in use." } };
+    return { error: error.message || "Failed to create product." };
   }
 
-  await db.insert(products).values({
-    id: parsed.data.id,
-    ...normalizePayload(parsed.data),
-  });
-
-  revalidatePath("/products");
   redirect("/products");
 }
 
@@ -116,28 +112,28 @@ export async function updateProduct(
     return { fieldErrors: buildFieldErrors(data) };
   }
 
-  const existingProduct = await db.query.products.findFirst({
-    where: and(eq(products.slug, parsed.data.slug), ne(products.id, id)),
-  });
+  try {
+    await adminFetch(`/admin/products/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(normalizePayload(parsed.data, id)),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409) {
+      return { fieldErrors: { slug: "Slug already in use." } };
+    }
 
-  if (existingProduct) {
-    return { fieldErrors: { slug: "Slug already in use." } };
+    return { error: "Failed to update product." };
   }
 
-  await db
-    .update(products)
-    .set(normalizePayload(parsed.data, id))
-    .where(eq(products.id, id));
-
-  revalidatePath("/products");
   redirect("/products");
 }
 
 export async function archiveProduct(id: string): Promise<void> {
-  await db
-    .update(products)
-    .set({ status: "archived", updatedAt: new Date() })
-    .where(eq(products.id, id));
+  const unauthorized = await ensureAuthorized();
 
-  revalidatePath("/products");
+  if (unauthorized) {
+    redirect("/login");
+  }
+
+  await adminFetch(`/admin/products/${id}`, { method: "DELETE" });
 }
