@@ -41,16 +41,32 @@ export type OrderDetail = {
   updatedAt?: string;
 };
 
+export type OrderSummary = {
+  id: string;
+  status: OrderStatus;
+  customerEmail: string;
+  customerName: string;
+  paymentMethod: string;
+  currency: "NGN" | "USD";
+  subtotal: number;
+  logisticsFee: number;
+  dutyTax: number;
+  totalDue: number;
+  itemCount: number;
+  createdAt: string;
+  updatedAt?: string;
+};
+
 type ListOrdersResponse = {
   total: number;
-  orders: OrderDetail[];
+  orders: OrderSummary[];
 };
 
 export async function listOrders(params?: {
   status?: OrderStatus;
   limit?: number;
   offset?: number;
-}): Promise<OrderDetail[]> {
+}): Promise<OrderSummary[]> {
   const query = new URLSearchParams();
 
   if (params?.status) query.set("status", params.status);

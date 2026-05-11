@@ -10,11 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { OrderDetail, OrderStatus } from "@/lib/api/orders";
+import type { OrderStatus, OrderSummary } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/formatPrice";
 
 type OrdersTableProps = {
-  orders: OrderDetail[];
+  orders: OrderSummary[];
 };
 
 function getStatusBadgeClass(status: OrderStatus): string {
@@ -69,7 +69,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 {order.customerName}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {order.items.length}
+                {order.itemCount}
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {formatPrice(order.totalDue, order.currency)}
