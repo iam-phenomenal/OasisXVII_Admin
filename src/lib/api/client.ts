@@ -20,7 +20,6 @@ async function parseResponseBody(response: Response): Promise<unknown> {
   }
 
   try {
-    console.log(JSON.parse(text))
     return JSON.parse(text) as unknown;
   } catch {
     return text;

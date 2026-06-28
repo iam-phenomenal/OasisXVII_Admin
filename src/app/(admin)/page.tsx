@@ -3,8 +3,7 @@ import { getCurrentAdmin } from "@/lib/auth";
 import { formatPrice } from "@/lib/formatPrice";
 
 export default async function DashboardPage() {
-  const admin = await getCurrentAdmin();
-  const s = await getDashboardStats();
+  const [admin, s] = await Promise.all([getCurrentAdmin(), getDashboardStats()]);
   const stats = [
     {
       label: "Total orders",

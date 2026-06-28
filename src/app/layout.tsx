@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Material_Symbols_Outlined, Space_Grotesk } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -21,6 +21,12 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const materialSymbols = Material_Symbols_Outlined({
+  variable: "--font-material-symbols",
+  subsets: ["latin"],
+  display: "optional",
+});
+
 export const metadata: Metadata = {
   title: "OasisXVII Admin",
   description: "Admin panel for OasisXVII — catalog, storefront, and checkout management.",
@@ -33,14 +39,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        />
-      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${materialSymbols.variable} antialiased`}
       >
         {children}
         <Toaster />
