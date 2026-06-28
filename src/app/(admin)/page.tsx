@@ -1,31 +1,26 @@
+import { Clock, CreditCard, ReceiptText, Tag } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
 import { getDashboardStats } from "@/lib/api/dashboard";
 import { getCurrentAdmin } from "@/lib/auth";
 import { formatPrice } from "@/lib/formatPrice";
 
+const STATS_CONFIG: { label: string; Icon: LucideIcon; key: "totalOrders" | "totalRevenue" | "activeProducts" | "pendingOrders" }[] = [
+  { label: "Total orders", Icon: ReceiptText, key: "totalOrders" },
+  { label: "Total revenue", Icon: CreditCard, key: "totalRevenue" },
+  { label: "Active products", Icon: Tag, key: "activeProducts" },
+  { label: "Pending orders", Icon: Clock, key: "pendingOrders" },
+];
+
 export default async function DashboardPage() {
   const [admin, s] = await Promise.all([getCurrentAdmin(), getDashboardStats()]);
-  const stats = [
-    {
-      label: "Total orders",
-      icon: "receipt_long",
-      value: s.totalOrders,
-    },
-    {
-      label: "Total revenue",
-      icon: "payments",
-      value: formatPrice(s.totalRevenue, "NGN"),
-    },
-    {
-      label: "Active products",
-      icon: "category",
-      value: s.productsByStatus.active,
-    },
-    {
-      label: "Pending orders",
-      icon: "pending_actions",
-      value: s.ordersByStatus.pending,
-    },
-  ];
+
+  const statValues: Record<string, string | number> = {
+    totalOrders: s.totalOrders,
+    totalRevenue: formatPrice(s.totalRevenue, "NGN"),
+    activeProducts: s.productsByStatus.active,
+    pendingOrders: s.ordersByStatus.pending,
+  };
 
   return (
     <section className="space-y-6">
@@ -39,7 +34,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map(({ label, icon, value }) => (
+        {STATS_CONFIG.map(({ label, Icon, key }) => (
           <div
             key={label}
             className="flex flex-col gap-3 rounded-lg border border-border bg-card p-5"
@@ -48,15 +43,10 @@ export default async function DashboardPage() {
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 {label}
               </p>
-              <span
-                className="material-symbols-outlined text-[18px] text-wine-glow"
-                aria-hidden="true"
-              >
-                {icon}
-              </span>
+              <Icon className="h-[18px] w-[18px] text-wine-glow" aria-hidden="true" />
             </div>
             <p className="text-2xl font-semibold tabular-nums text-foreground">
-              {value}
+              {statValues[key]}
             </p>
           </div>
         ))}

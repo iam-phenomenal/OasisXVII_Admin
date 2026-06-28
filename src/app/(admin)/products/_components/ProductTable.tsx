@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useState } from "react";
+import { Archive, SquarePen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -142,12 +143,7 @@ export function ProductTable({ products }: ProductTableProps) {
                         href={`/products/${product.id}/edit`}
                         aria-label={`Edit ${product.name}`}
                       >
-                        <span
-                          className="material-symbols-outlined text-[18px]"
-                          aria-hidden="true"
-                        >
-                          edit_square
-                        </span>
+                        <SquarePen className="h-4 w-4" aria-hidden="true" />
                       </Link>
                     </Button>
 
@@ -159,12 +155,7 @@ export function ProductTable({ products }: ProductTableProps) {
                       disabled={Boolean(pendingArchiveId)}
                       onClick={() => setActiveArchiveId(product.id)}
                     >
-                      <span
-                        className="material-symbols-outlined text-[18px]"
-                        aria-hidden="true"
-                      >
-                        archive
-                      </span>
+                      <Archive className="h-4 w-4" aria-hidden="true" />
                     </Button>
 
                     <AlertDialog

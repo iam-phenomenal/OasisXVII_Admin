@@ -1,3 +1,4 @@
+import { Archive } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { getAdminProduct, listAdminProducts } from "@/lib/api/products";
@@ -36,9 +37,7 @@ export default async function EditProductPage({
 
       {product.status === "archived" ? (
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-            archive
-          </span>
+          <Archive className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
           This product is archived. Change the status to make it visible again.
         </div>
       ) : null}

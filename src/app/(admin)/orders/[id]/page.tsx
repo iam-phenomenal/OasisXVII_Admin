@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -57,12 +58,7 @@ export default async function OrderDetailPage({
         href="/orders"
         className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
-        <span
-          className="material-symbols-outlined text-[16px]"
-          aria-hidden="true"
-        >
-          arrow_back
-        </span>
+        <ArrowLeft className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
         Orders
       </Link>
 

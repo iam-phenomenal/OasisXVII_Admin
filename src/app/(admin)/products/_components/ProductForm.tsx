@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { ChevronDown } from "lucide-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -564,12 +565,7 @@ export function ProductForm({
                       ? `${selectedRelatedProducts.length} selected`
                       : "Select related products"}
                   </span>
-                  <span
-                    className="material-symbols-outlined text-[18px]"
-                    aria-hidden="true"
-                  >
-                    expand_more
-                  </span>
+                  <ChevronDown className="h-[18px] w-[18px]" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">

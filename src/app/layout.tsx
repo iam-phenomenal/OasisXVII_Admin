@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Material_Symbols_Outlined, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -18,13 +18,7 @@ const geistMono = Geist_Mono({
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const materialSymbols = Material_Symbols_Outlined({
-  variable: "--font-material-symbols",
-  subsets: ["latin"],
-  display: "optional",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${materialSymbols.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased`}
       >
         {children}
         <Toaster />

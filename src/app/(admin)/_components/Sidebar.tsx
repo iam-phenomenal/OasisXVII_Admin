@@ -1,8 +1,17 @@
 "use client";
 
-import { BottleWine, LogOut } from "lucide-react";
+import {
+  BottleWine,
+  Globe,
+  LayoutDashboard,
+  LogOut,
+  Package2,
+  ShoppingCart,
+  Tag,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -11,15 +20,15 @@ import { cn } from "@/lib/utils";
 type NavItem = {
   label: string;
   href?: string;
-  icon: string;
+  Icon: LucideIcon;
 };
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: "space_dashboard" },
-  { label: "Products", href: "/products", icon: "category" },
-  { label: "Storefront", href: "/storefront", icon: "web" },
-  { label: "Checkout Settings", href: "/checkout-settings", icon: "point_of_sale" },
-  { label: "Orders", href: "/orders", icon: "package_2" },
+  { label: "Dashboard", href: "/", Icon: LayoutDashboard },
+  { label: "Products", href: "/products", Icon: Tag },
+  { label: "Storefront", href: "/storefront", Icon: Globe },
+  { label: "Checkout Settings", href: "/checkout-settings", Icon: ShoppingCart },
+  { label: "Orders", href: "/orders", Icon: Package2 },
 ];
 
 function isActiveRoute(pathname: string, href?: string) {
@@ -56,14 +65,7 @@ export function Sidebar() {
       <nav className="mt-5 flex flex-1 flex-col gap-0.5">
         {navItems.map((item) => {
           const active = isActiveRoute(pathname, item.href);
-          const icon = (
-            <span
-              className="material-symbols-outlined text-[18px] leading-none"
-              aria-hidden="true"
-            >
-              {item.icon}
-            </span>
-          );
+          const { Icon } = item;
 
           if (!item.href) {
             return (
@@ -72,7 +74,7 @@ export function Sidebar() {
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground/40 cursor-not-allowed"
                 aria-disabled="true"
               >
-                {icon}
+                <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
                 <span className="flex-1 text-sm font-medium">{item.label}</span>
                 <span className="rounded-full border border-border/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/50">
                   Soon
@@ -93,15 +95,13 @@ export function Sidebar() {
               )}
               aria-current={active ? "page" : undefined}
             >
-              <span
+              <Icon
                 className={cn(
-                  "material-symbols-outlined text-[18px] leading-none",
+                  "h-[18px] w-[18px] shrink-0",
                   active ? "text-wine-glow" : "",
                 )}
                 aria-hidden="true"
-              >
-                {item.icon}
-              </span>
+              />
               <span className="flex-1">{item.label}</span>
             </Link>
           );

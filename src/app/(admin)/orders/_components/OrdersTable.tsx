@@ -1,3 +1,4 @@
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -99,12 +100,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                       href={`/orders/${order.id}`}
                       aria-label={`View order ${order.id}`}
                     >
-                      <span
-                        className="material-symbols-outlined text-[18px]"
-                        aria-hidden="true"
-                      >
-                        open_in_new
-                      </span>
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   </Button>
                 </div>
