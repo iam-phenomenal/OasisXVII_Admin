@@ -65,7 +65,7 @@ export default async function EditProductPage({
         allProducts={allProducts
           .filter((entry) => entry.id !== product.id)
           .map((entry) => ({ id: entry.id, name: entry.name }))}
-        onSubmit={(data) => updateProduct(product.id, data)}
+        onSubmit={updateProduct.bind(null, product.id)}
       />
     </section>
   );
