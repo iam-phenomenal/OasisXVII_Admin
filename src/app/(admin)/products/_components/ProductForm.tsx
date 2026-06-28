@@ -1,12 +1,23 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -147,8 +158,10 @@ export function ProductForm({
   allProducts,
   onSubmit,
 }: ProductFormProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const form = useForm<ProductFormDraftInput, unknown, ProductFormDraft>({
     resolver: zodResolver(productFormDraftSchema),
@@ -159,6 +172,27 @@ export function ProductForm({
     control: form.control,
     name: "specsRows",
   });
+
+  const isDirty = form.formState.isDirty;
+
+  useEffect(() => {
+    const handler = (event: BeforeUnloadEvent) => {
+      if (isDirty) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      setShowCancelDialog(true);
+    } else {
+      router.push("/products");
+    }
+  }, [isDirty, router]);
 
   const relatedProductIds = form.watch("relatedProductIds") ?? [];
 
@@ -650,6 +684,14 @@ export function ProductForm({
       ) : null}
 
       <div className="flex items-center justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isPending}
+          onClick={handleCancel}
+        >
+          Cancel
+        </Button>
         <Button type="submit" disabled={isPending}>
           {isPending
             ? isEditMode
@@ -660,6 +702,26 @@ export function ProductForm({
               : "Create product"}
         </Button>
       </div>
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Leaving now will discard them.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep editing</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => router.push("/products")}
+            >
+              Discard
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }

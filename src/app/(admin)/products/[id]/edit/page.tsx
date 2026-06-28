@@ -19,7 +19,7 @@ export default async function EditProductPage({
     listAdminProducts("active"),
   ]);
 
-  if (!product || product.status === "archived") {
+  if (!product) {
     notFound();
   }
 
@@ -34,6 +34,15 @@ export default async function EditProductPage({
         </h1>
       </div>
 
+      {product.status === "archived" ? (
+        <div className="flex items-center gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+            archive
+          </span>
+          This product is archived. Change the status to make it visible again.
+        </div>
+      ) : null}
+
       <ProductForm
         initialValues={{
           id: product.id,
@@ -44,7 +53,7 @@ export default async function EditProductPage({
           price: Number(product.price),
           currency: product.currency,
           category: product.category,
-          badge: product.badge,
+          badge: product.badge ?? null,
           status: product.status,
           sizes: product.sizes,
           colors: product.colors,
