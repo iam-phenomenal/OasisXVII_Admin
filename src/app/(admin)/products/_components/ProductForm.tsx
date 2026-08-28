@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,7 +48,6 @@ import {
   productStatusOptions,
   type ProductFormValues,
 } from "../_lib/productSchema";
-import { ImageUpload } from "./ImageUpload";
 import { TagInput } from "./TagInput";
 import type { ProductActionResult } from "../actions";
 
@@ -664,6 +664,8 @@ export function ProductForm({
                 value={field.value ?? []}
                 onChange={(nextImages) => field.onChange(nextImages)}
                 persistedUrls={initialValues?.images ?? []}
+                emptyTitle="Upload product images"
+                emptyDescription="Drag ordering becomes available after the first upload."
               />
             )}
           />

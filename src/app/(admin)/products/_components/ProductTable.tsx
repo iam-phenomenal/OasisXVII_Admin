@@ -115,7 +115,7 @@ export function ProductTable({ products }: ProductTableProps) {
                 <TableCell className="capitalize text-muted-foreground">
                   {product.category}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground tabular-nums">
                   {formatPrice(product.price, product.currency)}
                 </TableCell>
                 <TableCell>
@@ -133,7 +133,7 @@ export function ProductTable({ products }: ProductTableProps) {
                     {product.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground tabular-nums">
                   {product.images.length}
                 </TableCell>
                 <TableCell>

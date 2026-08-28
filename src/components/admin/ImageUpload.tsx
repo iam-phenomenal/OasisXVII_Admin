@@ -17,9 +17,19 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Loader2, UploadCloud, X } from "lucide-react";
 import Image from "next/image";
-import { useId, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +39,9 @@ type ImageUploadProps = {
   maxImages?: number;
   maxFileSizeMb?: number;
   folder?: string;
+  persistedUrls?: string[];
+  emptyTitle?: string;
+  emptyDescription?: string;
 };
 
 type ImageKitAuth = {
@@ -187,10 +200,18 @@ export function ImageUpload({
   maxImages = 8,
   maxFileSizeMb = 5,
   folder = "/oasisxvii/products",
+  persistedUrls = [],
+  emptyTitle = "Upload hero images",
+  emptyDescription = "Drag ordering becomes available after the first upload.",
 }: ImageUploadProps) {
   const fileInputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  const [confirmUrl, setConfirmUrl] = useState<string | null>(null);
+  const persistedUrlSet = useMemo(
+    () => new Set(persistedUrls),
+    [persistedUrls],
+  );
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -218,8 +239,18 @@ export function ImageUpload({
     onChange(arrayMove(value, oldIndex, newIndex));
   };
 
-  const handleRemove = (url: string) => {
+  const removeUrl = (url: string) => {
     onChange(value.filter((imageUrl) => imageUrl !== url));
+    setConfirmUrl(null);
+  };
+
+  const handleRemove = (url: string) => {
+    if (persistedUrlSet.has(url)) {
+      setConfirmUrl(url);
+      return;
+    }
+
+    removeUrl(url);
   };
 
   const handleSelectFiles = async (
@@ -358,11 +389,9 @@ export function ImageUpload({
             className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background/40 px-4 py-6 text-center"
           >
             <UploadCloud className="mb-3 h-5 w-5 text-muted-foreground" />
-            <p className="text-sm font-medium text-foreground">
-              Upload hero images
-            </p>
+            <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Drag ordering becomes available after the first upload.
+              {emptyDescription}
             </p>
           </label>
         )}
@@ -381,6 +410,34 @@ export function ImageUpload({
           </div>
         ) : null}
       </div>
+
+      <AlertDialog
+        open={Boolean(confirmUrl)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setConfirmUrl(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove saved image?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This image is already part of the product. Remove it from the
+              gallery?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => confirmUrl && removeUrl(confirmUrl)}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

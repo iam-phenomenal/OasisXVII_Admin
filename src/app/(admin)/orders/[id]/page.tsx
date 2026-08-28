@@ -143,13 +143,13 @@ export default async function OrderDetailPage({
                 <TableCell className="text-muted-foreground">
                   {item.color}
                 </TableCell>
-                <TableCell className="text-right text-muted-foreground">
+                <TableCell className="text-right text-muted-foreground tabular-nums">
                   {item.quantity}
                 </TableCell>
-                <TableCell className="text-right text-muted-foreground">
+                <TableCell className="text-right text-muted-foreground tabular-nums">
                   {formatPrice(item.unitPrice, order.currency)}
                 </TableCell>
-                <TableCell className="text-right font-medium text-foreground">
+                <TableCell className="text-right font-medium text-foreground tabular-nums">
                   {formatPrice(item.lineTotal, order.currency)}
                 </TableCell>
               </TableRow>
@@ -162,25 +162,25 @@ export default async function OrderDetailPage({
         <div className="ml-auto max-w-xs space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Subtotal</span>
-            <span className="font-medium text-foreground">
+            <span className="font-medium text-foreground tabular-nums">
               {formatPrice(order.subtotal, order.currency)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Logistics fee</span>
-            <span className="font-medium text-foreground">
+            <span className="font-medium text-foreground tabular-nums">
               {formatPrice(order.logisticsFee, order.currency)}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Duty &amp; tax</span>
-            <span className="font-medium text-foreground">
+            <span className="font-medium text-foreground tabular-nums">
               {formatPrice(order.dutyTax, order.currency)}
             </span>
           </div>
           <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
             <span className="text-foreground">Total due</span>
-            <span className="text-foreground">
+            <span className="text-foreground tabular-nums">
               {formatPrice(order.totalDue, order.currency)}
             </span>
           </div>

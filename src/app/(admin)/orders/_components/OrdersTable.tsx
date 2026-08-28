@@ -69,10 +69,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
               <TableCell className="font-medium text-foreground">
                 {order.customerName}
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-muted-foreground tabular-nums">
                 {order.itemCount}
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-muted-foreground tabular-nums">
                 {formatPrice(order.totalDue, order.currency)}
               </TableCell>
               <TableCell className="capitalize text-muted-foreground">
