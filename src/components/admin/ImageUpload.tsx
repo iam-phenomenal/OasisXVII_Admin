@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type ImageUploadProps = {
@@ -359,57 +360,61 @@ export function ImageUpload({
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card/60 p-4">
-        {value.length > 0 ? (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={value}
-              strategy={horizontalListSortingStrategy}
+      <Card>
+        <CardContent>
+          {value.length > 0 ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              <div className="flex flex-wrap gap-3">
-                {value.map((url, index) => (
-                  <SortableImage
-                    key={url}
-                    url={url}
-                    index={index}
-                    onRemove={handleRemove}
-                    isBusy={isBusy}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        ) : (
-          <label
-            htmlFor={fileInputId}
-            className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background/40 px-4 py-6 text-center"
-          >
-            <UploadCloud className="mb-3 h-5 w-5 text-muted-foreground" />
-            <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {emptyDescription}
-            </p>
-          </label>
-        )}
-
-        {uploadingFiles.length > 0 ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {uploadingFiles.map((file) => (
-              <div
-                key={file.id}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground"
+              <SortableContext
+                items={value}
+                strategy={horizontalListSortingStrategy}
               >
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span className="max-w-40 truncate">Uploading {file.name}</span>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
+                <div className="flex flex-wrap gap-3">
+                  {value.map((url, index) => (
+                    <SortableImage
+                      key={url}
+                      url={url}
+                      index={index}
+                      onRemove={handleRemove}
+                      isBusy={isBusy}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <label
+              htmlFor={fileInputId}
+              className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background/40 px-4 py-6 text-center"
+            >
+              <UploadCloud className="mb-3 h-5 w-5 text-muted-foreground" />
+              <p className="text-sm font-medium text-foreground">{emptyTitle}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {emptyDescription}
+              </p>
+            </label>
+          )}
+
+          {uploadingFiles.length > 0 ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {uploadingFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground"
+                >
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span className="max-w-40 truncate">
+                    Uploading {file.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <AlertDialog
         open={Boolean(confirmUrl)}

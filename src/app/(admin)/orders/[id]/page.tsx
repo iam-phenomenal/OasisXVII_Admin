@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -85,33 +86,37 @@ export default async function OrderDetailPage({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Customer
-          </h2>
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-foreground">
-              {order.customerName}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {order.customerEmail}
-            </p>
-            <p className="text-sm capitalize text-muted-foreground">
-              via {order.paymentMethod}
-            </p>
-          </div>
-        </div>
+        <Card>
+          <CardContent className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Customer
+            </h2>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-foreground">
+                {order.customerName}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {order.customerEmail}
+              </p>
+              <p className="text-sm capitalize text-muted-foreground">
+                via {order.paymentMethod}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Shipping Address
-          </h2>
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p>{addr.line1}</p>
-            {cityLine ? <p>{cityLine}</p> : null}
-            <p>{addr.country}</p>
-          </div>
-        </div>
+        <Card>
+          <CardContent className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Shipping Address
+            </h2>
+            <div className="space-y-1 text-sm text-muted-foreground">
+              <p>{addr.line1}</p>
+              {cityLine ? <p>{cityLine}</p> : null}
+              <p>{addr.country}</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -158,34 +163,36 @@ export default async function OrderDetailPage({
         </Table>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-5">
-        <div className="ml-auto max-w-xs space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
-            <span className="font-medium text-foreground tabular-nums">
-              {formatPrice(order.subtotal, order.currency)}
-            </span>
+      <Card>
+        <CardContent>
+          <div className="ml-auto max-w-xs space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="font-medium text-foreground tabular-nums">
+                {formatPrice(order.subtotal, order.currency)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Logistics fee</span>
+              <span className="font-medium text-foreground tabular-nums">
+                {formatPrice(order.logisticsFee, order.currency)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Duty &amp; tax</span>
+              <span className="font-medium text-foreground tabular-nums">
+                {formatPrice(order.dutyTax, order.currency)}
+              </span>
+            </div>
+            <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
+              <span className="text-foreground">Total due</span>
+              <span className="text-foreground tabular-nums">
+                {formatPrice(order.totalDue, order.currency)}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Logistics fee</span>
-            <span className="font-medium text-foreground tabular-nums">
-              {formatPrice(order.logisticsFee, order.currency)}
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Duty &amp; tax</span>
-            <span className="font-medium text-foreground tabular-nums">
-              {formatPrice(order.dutyTax, order.currency)}
-            </span>
-          </div>
-          <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
-            <span className="text-foreground">Total due</span>
-            <span className="text-foreground tabular-nums">
-              {formatPrice(order.totalDue, order.currency)}
-            </span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

@@ -21,6 +21,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -37,7 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
@@ -256,21 +262,15 @@ export function ProductForm({
   const isEditMode = Boolean(productId);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 rounded-lg border border-border bg-card p-6"
-    >
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">
-              Core details
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Set the product identity and core copy.
-            </p>
-          </div>
-
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Core details</CardTitle>
+          <CardDescription>
+            Set the product identity and core copy.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="id">ID</Label>
@@ -324,20 +324,17 @@ export function ProductForm({
             />
             <FieldError message={form.formState.errors.description?.message} />
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <Separator />
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">
-              Pricing & classification
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Control pricing, merchandising, and publish state.
-            </p>
-          </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Pricing &amp; classification</CardTitle>
+          <CardDescription>
+            Control pricing, merchandising, and publish state.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="price">Price</Label>
@@ -449,20 +446,17 @@ export function ProductForm({
               <FieldError message={form.formState.errors.status?.message} />
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <Separator />
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">
-              Variants
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Manage sizes, colors, specs, and related products.
-            </p>
-          </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Variants</CardTitle>
+          <CardDescription>
+            Manage sizes, colors, specs, and related products.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="space-y-2">
               <Label>Sizes</Label>
@@ -644,18 +638,17 @@ export function ProductForm({
               </div>
             ) : null}
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <Separator />
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">Images</h2>
-            <p className="text-sm text-muted-foreground">
-              Upload, reorder, and curate the product gallery.
-            </p>
-          </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Images</CardTitle>
+          <CardDescription>
+            Upload, reorder, and curate the product gallery.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <Controller
             control={form.control}
             name="images"
@@ -674,8 +667,8 @@ export function ProductForm({
               form.formState.errors.images?.message as string | undefined
             }
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {formError ? (
         <p className="text-sm text-destructive">{formError}</p>

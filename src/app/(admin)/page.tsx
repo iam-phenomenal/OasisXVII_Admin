@@ -1,6 +1,8 @@
 import { Clock, CreditCard, ReceiptText, Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { StatCard } from "@/components/admin/StatCard";
+import { Card, CardContent } from "@/components/ui/card";
 import { getDashboardStats } from "@/lib/api/dashboard";
 import { getCurrentAdmin } from "@/lib/auth";
 import { formatPrice } from "@/lib/formatPrice";
@@ -35,31 +37,25 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {STATS_CONFIG.map(({ label, Icon, key }) => (
-          <div
+          <StatCard
             key={label}
-            className="flex flex-col gap-3 rounded-lg border border-border bg-card p-5"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                {label}
-              </p>
-              <Icon className="h-[18px] w-[18px] text-wine-glow" aria-hidden="true" />
-            </div>
-            <p className="text-2xl font-semibold tabular-nums text-foreground">
-              {statValues[key]}
-            </p>
-          </div>
+            label={label}
+            Icon={Icon}
+            value={statValues[key]}
+          />
         ))}
       </div>
 
-      <div className="rounded-lg border border-border bg-card px-5 py-4">
-        <p className="text-xs text-muted-foreground">
-          Signed in as{" "}
-          <span className="font-medium text-foreground">
-            {admin?.email ?? "unknown"}
-          </span>
-        </p>
-      </div>
+      <Card>
+        <CardContent>
+          <p className="text-xs text-muted-foreground">
+            Signed in as{" "}
+            <span className="font-medium text-foreground">
+              {admin?.email ?? "unknown"}
+            </span>
+          </p>
+        </CardContent>
+      </Card>
     </section>
   );
 }
