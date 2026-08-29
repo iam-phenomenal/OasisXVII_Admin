@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
+import { FieldError, fieldErrorProps } from "@/components/admin/FieldError";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -151,14 +152,6 @@ function buildInitialValues(
   };
 }
 
-function FieldError({ message }: { message?: string }) {
-  if (!message) {
-    return null;
-  }
-
-  return <p className="text-sm text-destructive">{message}</p>;
-}
-
 export function ProductForm({
   initialValues,
   productId,
@@ -274,14 +267,23 @@ export function ProductForm({
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="id">ID</Label>
-              <Input id="id" disabled={isEditMode} {...form.register("id")} />
-              <FieldError message={form.formState.errors.id?.message} />
+              <Input
+                id="id"
+                disabled={isEditMode}
+                {...fieldErrorProps("id", form.formState.errors.id)}
+                {...form.register("id")}
+              />
+              <FieldError
+                fieldId="id"
+                message={form.formState.errors.id?.message}
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
+                {...fieldErrorProps("name", form.formState.errors.name)}
                 {...form.register("name")}
                 onChange={(event) => {
                   const nextName = event.target.value;
@@ -299,19 +301,36 @@ export function ProductForm({
                   );
                 }}
               />
-              <FieldError message={form.formState.errors.name?.message} />
+              <FieldError
+                fieldId="name"
+                message={form.formState.errors.name?.message}
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="slug">Slug</Label>
-              <Input id="slug" {...form.register("slug")} />
-              <FieldError message={form.formState.errors.slug?.message} />
+              <Input
+                id="slug"
+                {...fieldErrorProps("slug", form.formState.errors.slug)}
+                {...form.register("slug")}
+              />
+              <FieldError
+                fieldId="slug"
+                message={form.formState.errors.slug?.message}
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="tagline">Tagline</Label>
-              <Input id="tagline" {...form.register("tagline")} />
-              <FieldError message={form.formState.errors.tagline?.message} />
+              <Input
+                id="tagline"
+                {...fieldErrorProps("tagline", form.formState.errors.tagline)}
+                {...form.register("tagline")}
+              />
+              <FieldError
+                fieldId="tagline"
+                message={form.formState.errors.tagline?.message}
+              />
             </div>
           </div>
 
@@ -320,9 +339,16 @@ export function ProductForm({
             <Textarea
               id="description"
               rows={6}
+              {...fieldErrorProps(
+                "description",
+                form.formState.errors.description,
+              )}
               {...form.register("description")}
             />
-            <FieldError message={form.formState.errors.description?.message} />
+            <FieldError
+              fieldId="description"
+              message={form.formState.errors.description?.message}
+            />
           </div>
         </CardContent>
       </Card>
@@ -343,19 +369,30 @@ export function ProductForm({
                 type="number"
                 min="0"
                 step="0.01"
+                {...fieldErrorProps("price", form.formState.errors.price)}
                 {...form.register("price", { valueAsNumber: true })}
               />
-              <FieldError message={form.formState.errors.price?.message} />
+              <FieldError
+                fieldId="price"
+                message={form.formState.errors.price?.message}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label htmlFor="currency">Currency</Label>
               <Controller
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="currency"
+                      className="w-full"
+                      {...fieldErrorProps(
+                        "currency",
+                        form.formState.errors.currency,
+                      )}
+                    >
                       <SelectValue placeholder="Select currency" />
                     </SelectTrigger>
                     <SelectContent>
@@ -368,17 +405,27 @@ export function ProductForm({
                   </Select>
                 )}
               />
-              <FieldError message={form.formState.errors.currency?.message} />
+              <FieldError
+                fieldId="currency"
+                message={form.formState.errors.currency?.message}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label htmlFor="category">Category</Label>
               <Controller
                 control={form.control}
                 name="category"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full capitalize">
+                    <SelectTrigger
+                      id="category"
+                      className="w-full capitalize"
+                      {...fieldErrorProps(
+                        "category",
+                        form.formState.errors.category,
+                      )}
+                    >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -391,11 +438,14 @@ export function ProductForm({
                   </Select>
                 )}
               />
-              <FieldError message={form.formState.errors.category?.message} />
+              <FieldError
+                fieldId="category"
+                message={form.formState.errors.category?.message}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Badge</Label>
+              <Label htmlFor="badge">Badge</Label>
               <Controller
                 control={form.control}
                 name="badge"
@@ -406,7 +456,11 @@ export function ProductForm({
                       field.onChange(value === "none" ? null : value)
                     }
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="badge"
+                      className="w-full"
+                      {...fieldErrorProps("badge", form.formState.errors.badge)}
+                    >
                       <SelectValue placeholder="Select badge" />
                     </SelectTrigger>
                     <SelectContent>
@@ -420,17 +474,27 @@ export function ProductForm({
                   </Select>
                 )}
               />
-              <FieldError message={form.formState.errors.badge?.message} />
+              <FieldError
+                fieldId="badge"
+                message={form.formState.errors.badge?.message}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label htmlFor="status">Status</Label>
               <Controller
                 control={form.control}
                 name="status"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full capitalize">
+                    <SelectTrigger
+                      id="status"
+                      className="w-full capitalize"
+                      {...fieldErrorProps(
+                        "status",
+                        form.formState.errors.status,
+                      )}
+                    >
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -443,7 +507,10 @@ export function ProductForm({
                   </Select>
                 )}
               />
-              <FieldError message={form.formState.errors.status?.message} />
+              <FieldError
+                fieldId="status"
+                message={form.formState.errors.status?.message}
+              />
             </div>
           </div>
         </CardContent>
@@ -459,20 +526,23 @@ export function ProductForm({
         <CardContent className="space-y-4">
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="space-y-2">
-              <Label>Sizes</Label>
+              <Label htmlFor="sizes">Sizes</Label>
               <Controller
                 control={form.control}
                 name="sizes"
                 render={({ field }) => (
                   <TagInput
+                    id="sizes"
                     label="Sizes"
                     placeholder="Add a size"
                     value={field.value ?? []}
                     onChange={field.onChange}
+                    {...fieldErrorProps("sizes", form.formState.errors.sizes)}
                   />
                 )}
               />
               <FieldError
+                fieldId="sizes"
                 message={
                   form.formState.errors.sizes?.message as string | undefined
                 }
@@ -480,20 +550,23 @@ export function ProductForm({
             </div>
 
             <div className="space-y-2">
-              <Label>Colors</Label>
+              <Label htmlFor="colors">Colors</Label>
               <Controller
                 control={form.control}
                 name="colors"
                 render={({ field }) => (
                   <TagInput
+                    id="colors"
                     label="Colors"
                     placeholder="Add a color"
                     value={field.value ?? []}
                     onChange={field.onChange}
+                    {...fieldErrorProps("colors", form.formState.errors.colors)}
                   />
                 )}
               />
               <FieldError
+                fieldId="colors"
                 message={
                   form.formState.errors.colors?.message as string | undefined
                 }
@@ -527,10 +600,12 @@ export function ProductForm({
                 >
                   <Input
                     placeholder="Key"
+                    aria-label={`Spec ${index + 1} key`}
                     {...form.register(`specsRows.${index}.key`)}
                   />
                   <Input
                     placeholder="Value"
+                    aria-label={`Spec ${index + 1} value`}
                     {...form.register(`specsRows.${index}.value`)}
                   />
                   <Button
@@ -663,6 +738,7 @@ export function ProductForm({
             )}
           />
           <FieldError
+            fieldId="images"
             message={
               form.formState.errors.images?.message as string | undefined
             }
@@ -671,7 +747,9 @@ export function ProductForm({
       </Card>
 
       {formError ? (
-        <p className="text-sm text-destructive">{formError}</p>
+        <p className="text-sm text-destructive" role="alert">
+          {formError}
+        </p>
       ) : null}
 
       <div className="flex items-center justify-end gap-3">

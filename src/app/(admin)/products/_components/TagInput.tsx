@@ -11,6 +11,9 @@ type TagInputProps = {
   placeholder: string;
   value: string[];
   onChange: (value: string[]) => void;
+  id?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 };
 
 export function TagInput({
@@ -18,6 +21,9 @@ export function TagInput({
   placeholder,
   value,
   onChange,
+  id,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: TagInputProps) {
   const [draft, setDraft] = useState("");
 
@@ -45,11 +51,14 @@ export function TagInput({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Input
+          id={id}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label={label}
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
         />
         <Button type="button" variant="outline" onClick={addTag}>
           Add

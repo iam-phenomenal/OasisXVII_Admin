@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { FieldError, fieldErrorProps } from "@/components/admin/FieldError";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,11 +100,10 @@ export function StorefrontForm({ initialValues }: StorefrontFormProps) {
           <p className="text-xs text-muted-foreground">
             {images.length} / 8 slides added
           </p>
-          {form.formState.errors.heroImages ? (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.heroImages.message}
-            </p>
-          ) : null}
+          <FieldError
+            fieldId="heroImages"
+            message={form.formState.errors.heroImages?.message}
+          />
         </CardContent>
       </Card>
 
@@ -120,13 +120,16 @@ export function StorefrontForm({ initialValues }: StorefrontFormProps) {
             <Input
               id="heroHeadline"
               placeholder="WELCOME TO THE OASIS"
+              {...fieldErrorProps(
+                "heroHeadline",
+                form.formState.errors.heroHeadline,
+              )}
               {...form.register("heroHeadline")}
             />
-            {form.formState.errors.heroHeadline ? (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.heroHeadline.message}
-              </p>
-            ) : null}
+            <FieldError
+              fieldId="heroHeadline"
+              message={form.formState.errors.heroHeadline?.message}
+            />
           </div>
 
           <div className="space-y-2">
@@ -134,19 +137,24 @@ export function StorefrontForm({ initialValues }: StorefrontFormProps) {
             <Input
               id="heroSubheading"
               placeholder="OWN AUTHENTIC STYLE & INCARNATE SWAG"
+              {...fieldErrorProps(
+                "heroSubheading",
+                form.formState.errors.heroSubheading,
+              )}
               {...form.register("heroSubheading")}
             />
-            {form.formState.errors.heroSubheading ? (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.heroSubheading.message}
-              </p>
-            ) : null}
+            <FieldError
+              fieldId="heroSubheading"
+              message={form.formState.errors.heroSubheading?.message}
+            />
           </div>
         </CardContent>
       </Card>
 
       {serverError ? (
-        <p className="text-sm text-destructive">{serverError}</p>
+        <p className="text-sm text-destructive" role="alert">
+          {serverError}
+        </p>
       ) : null}
 
       <div className="flex justify-end">

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+import { FieldError, fieldErrorProps } from "@/components/admin/FieldError";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -95,12 +96,14 @@ export function CheckoutSettingsForm({
             <Input
               id="paymentMethods.0.label"
               placeholder="Display label on storefront"
-              aria-invalid={Boolean(labelError)}
+              {...fieldErrorProps("paymentMethods.0.label", labelError)}
               {...form.register("paymentMethods.0.label")}
             />
-            {labelError ? (
-              <p className="text-xs text-destructive">{labelError}</p>
-            ) : null}
+            <FieldError
+              fieldId="paymentMethods.0.label"
+              message={labelError}
+              className="text-xs"
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -109,12 +112,17 @@ export function CheckoutSettingsForm({
               id="paymentMethods.0.description"
               rows={3}
               placeholder="Payment instructions shown after selection (optional)"
-              aria-invalid={Boolean(descriptionError)}
+              {...fieldErrorProps(
+                "paymentMethods.0.description",
+                descriptionError,
+              )}
               {...form.register("paymentMethods.0.description")}
             />
-            {descriptionError ? (
-              <p className="text-xs text-destructive">{descriptionError}</p>
-            ) : null}
+            <FieldError
+              fieldId="paymentMethods.0.description"
+              message={descriptionError}
+              className="text-xs"
+            />
           </div>
         </CardContent>
       </Card>
@@ -134,14 +142,17 @@ export function CheckoutSettingsForm({
               type="number"
               min={0}
               step={1}
-              aria-invalid={Boolean(form.formState.errors.logisticsFeeNgn)}
+              {...fieldErrorProps(
+                "logisticsFeeNgn",
+                form.formState.errors.logisticsFeeNgn,
+              )}
               {...form.register("logisticsFeeNgn")}
             />
-            {form.formState.errors.logisticsFeeNgn ? (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.logisticsFeeNgn.message}
-              </p>
-            ) : null}
+            <FieldError
+              fieldId="logisticsFeeNgn"
+              message={form.formState.errors.logisticsFeeNgn?.message}
+              className="text-xs"
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -151,20 +162,26 @@ export function CheckoutSettingsForm({
               type="number"
               min={0}
               step={1}
-              aria-invalid={Boolean(form.formState.errors.dutyTaxNgn)}
+              {...fieldErrorProps(
+                "dutyTaxNgn",
+                form.formState.errors.dutyTaxNgn,
+              )}
               {...form.register("dutyTaxNgn")}
             />
-            {form.formState.errors.dutyTaxNgn ? (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.dutyTaxNgn.message}
-              </p>
-            ) : null}
+            <FieldError
+              fieldId="dutyTaxNgn"
+              message={form.formState.errors.dutyTaxNgn?.message}
+              className="text-xs"
+            />
           </div>
         </CardContent>
       </Card>
 
       {serverError ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
           {serverError}
         </div>
       ) : null}
