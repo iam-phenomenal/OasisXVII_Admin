@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
+import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,27 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { OrderStatus, OrderSummary } from "@/lib/api/orders";
+import type { OrderSummary } from "@/lib/api/orders";
 import { formatPrice } from "@/lib/formatPrice";
 
 type OrdersTableProps = {
   orders: OrderSummary[];
 };
-
-function getStatusBadgeClass(status: OrderStatus): string {
-  switch (status) {
-    case "pending":
-      return "border-amber-500/25 bg-amber-500/10 text-amber-300";
-    case "confirmed":
-      return "border-blue-500/25 bg-blue-500/10 text-blue-300";
-    case "shipped":
-      return "border-purple-500/25 bg-purple-500/10 text-purple-300";
-    case "delivered":
-      return "border-emerald-500/25 bg-emerald-500/10 text-emerald-300";
-    case "cancelled":
-      return "border-border bg-muted text-muted-foreground";
-  }
-}
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   return (
@@ -79,12 +64,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 {order.paymentMethod}
               </TableCell>
               <TableCell>
-                <Badge
-                  variant="outline"
-                  className={getStatusBadgeClass(order.status)}
-                >
-                  {order.status}
-                </Badge>
+                <OrderStatusBadge status={order.status} />
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {new Date(order.createdAt).toLocaleDateString("en-NG", {

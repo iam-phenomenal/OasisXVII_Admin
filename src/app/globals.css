@@ -25,6 +25,11 @@
   --border: rgba(52, 52, 61, 0.5);
   --input: #18181F;
   --ring: #8A1A49;
+  /* Chart series. --primary (#8A1A49) is only ~2.9:1 against the #131318 card
+     surface, so a 1-2px stroke at that contrast disappears; wine-hover is the
+     established brighter token. Do not introduce new hex values here. */
+  --chart-1: #B21E42;
+  --chart-2: #FF2D6F;
   --radius: 0.5rem;
   --sidebar: #0E0E13;
   --sidebar-foreground: #E4E1E9;
@@ -57,6 +62,11 @@
   --border: rgba(52, 52, 61, 0.5);
   --input: #18181F;
   --ring: #8A1A49;
+  /* Chart series. --primary (#8A1A49) is only ~2.9:1 against the #131318 card
+     surface, so a 1-2px stroke at that contrast disappears; wine-hover is the
+     established brighter token. Do not introduce new hex values here. */
+  --chart-1: #B21E42;
+  --chart-2: #FF2D6F;
   --sidebar: #0E0E13;
   --sidebar-foreground: #E4E1E9;
   --sidebar-primary: #8A1A49;
@@ -86,6 +96,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
